@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <script src="https://unpkg.com/htmx.org"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            flex-direction: column;
+            background: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background: #6200ea;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        main {
+            max-width: 900px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            flex: 1;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        button {
+            background: #6200ea;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background: #3700b3;
+        }
+        .short-url-box {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .short-url-box p {
+            margin: 0.5rem 0;
+        }
+        .short-url-box a {
+            color: #6200ea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .short-url-box a:hover {
+            text-decoration: underline;
+        }
+        .short-url-box button {
+            margin: 0.5rem;
+        }
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 1.5rem 0;
+            margin-top: auto;
+        }
+        footer a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 0.5rem;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+        footer a:hover {
+            color: #6200ea;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>URL Shortener</h1>
+</header>
+
+<main>
+    <form
+            id="url-form"
+            hx-post="/api"
+            hx-target="#short-url-result"
+            hx-swap="innerHTML"
+            hx-trigger="submit">
+        <div class="form-group">
+            <label for="longUrl">Enter URL:</label>
+            <input type="url" id="longUrl" name="longUrl" required placeholder="https://example.com" />
+        </div>
+        <button type="submit">Shorten URL</button>
+    </form>
+
+    <!-- HTMX will replace this div with the server response -->
+    <div id="short-url-result"></div>
+</main>
+
+<footer>
+    <p>Created by Your Name</p>
+    <div>
+        <a href="https://linkedin.com/in/yourprofile" target="_blank"><i class="fab fa-linkedin"></i></a>
+        <a href="mailto:youremail@example.com"><i class="fas fa-envelope"></i></a>
+        <a href="https://github.com/yourusername" target="_blank"><i class="fab fa-github"></i></a>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener("htmx:afterRequest", (event) => {
+        const target = document.getElementById("short-url-result");
+        const data = JSON.parse(event.detail.xhr.response);
+
+        if (data.shortUrl && data.longUrl) {
+            target.innerHTML = `
+                    <div class="short-url-box">
+                        <p>Short URL: <span>${data.shortUrl}</span>
+                            <button onclick="copyToClipboard('${data.shortUrl}')">Copy</button>
+                        </p>
+                        <p>Original URL: <a href="${data.longUrl}" target="_blank">${data.longUrl}</a></p>
+                        <button onclick="resetForm()">Shorten Another URL</button>
+                    </div>
+                `;
+        }
+    });
+
+    function copyToClipboard(url) {
+        navigator.clipboard.writeText(url).then(() => {
+            alert("Copied to clipboard!");
+        });
+    }
+
+    function resetForm() {
+        document.getElementById("url-form").reset();
+        document.getElementById("short-url-result").innerHTML = "";
+    }
+</script>
+</body>
+</html>
