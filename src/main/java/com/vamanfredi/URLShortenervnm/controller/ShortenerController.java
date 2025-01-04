@@ -1,16 +1,12 @@
 package com.vamanfredi.URLShortenervnm.controller;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.vamanfredi.URLShortenervnm.service.RedisService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.websocket.server.PathParam;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
